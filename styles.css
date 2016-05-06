@@ -2,3 +2,35 @@ body {
   font-family: Lucida Console, Monaco5, monospace;
   height: 100vh;
 }
+
+#app {
+  width: 400px;
+  margin: auto;
+}
+
+#search {
+  width: 200px;
+}
+
+#listContainer {
+  height: 200px;
+  width: 200px;
+
+  list-style-type: none;
+  margin: 0px;
+  overflow-y: scroll;
+  padding-left: 0px;
+}
+
+.list-item {
+  line-height: 45px;
+  max-height: 50px;
+  overflow: hidden;
+  margin: 5px 0;
+  box-shadow: 5px 5px 5px #666;
+  border: 1px solid #666;
+}
+
+.hidden {
+  display: none;
+}
