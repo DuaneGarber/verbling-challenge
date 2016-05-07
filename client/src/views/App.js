@@ -1,20 +1,23 @@
 'use strict';
 
 import React from 'react';
+import classNames from 'classnames';
 
 export default class App extends React.Component {
-  constructor () {
-    super();
+  constructor (props) {
+    super(props);
     this.state = {
       items: []
     };
+
+    this.changeAllHandler = this.changeAllHandler.bind(this);
   }
   renderItems (item, index) {
     const isOpen = item.isOpen ? 'open' : 'closed';
     const isVisible = item.isVisible ? '' : 'hidden';
-    const klass = `${isOpen} ${isVisible}`;
+    const className = classNames('list-item', {'open' : item.isOpen, 'hidden': !item.isVisible});
     return (
-      <ListItem key={index} index={index} text={item.text} klass={klass} itemClickHandler={this.itemClickHandler.bind(this)}/>
+      <ListItem key={index} index={index} text={item.text} className={className} itemClickHandler={this.itemClickHandler.bind(this)}/>
     );
   }
   addItemHandler (text) {
@@ -26,16 +29,8 @@ export default class App extends React.Component {
     const items = [...this.state.items, item];
     this.setState({items: items});
   }
-  openAllHandler () {
-    const items = this.state.items.map((item) => Object.assign({}, item, {isOpen: true}));
-    this.setState({items: items});
-  }
-  closeAllHandler () {
-    const items = this.state.items.map((item) => Object.assign({}, item, {isOpen: false}));
-    this.setState({items: items});
-  }
-  toggleAllHandler () {
-    const items = this.state.items.map((item) => Object.assign({}, item, {isOpen: !item.isOpen}));
+  changeAllHandler (callback) {
+    const items = this.state.items.map((item) => Object.assign({}, item, callback(item)));
     this.setState({items: items});
   }
   itemClickHandler (index) {
@@ -47,24 +42,17 @@ export default class App extends React.Component {
                   ];
     this.setState({items: items});
   }
-  searchHandler (searchText) {
-    const searchRegex = new RegExp(searchText, 'i');
-    const items = this.state.items.map((item) => {
-      return Object.assign({}, item, {isVisible: searchRegex.test(item.text)});
-    });
-    this.setState({items: items});
-  }
   render () {
     return (
       <div>
-        <SearchBox searchHandler={this.searchHandler.bind(this)}/>
+        <SearchBox changeAllHandler={this.changeAllHandler}/>
         <ul id="listContainer">
           {this.state.items.map(this.renderItems.bind(this))}
         </ul>
         <div id="buttonContainer">
-          <OpenAll openAllHandler={this.openAllHandler.bind(this)}/>
-          <CloseAll closeAllHandler={this.closeAllHandler.bind(this)}/>
-          <ToggleAll toggleAllHandler={this.toggleAllHandler.bind(this)}/>
+          <OpenAll changeAllHandler={this.changeAllHandler}/>
+          <CloseAll changeAllHandler={this.changeAllHandler}/>
+          <ToggleAll changeAllHandler={this.changeAllHandler}/>
           <AddItem addItemHandler={this.addItemHandler.bind(this)}/>
         </div>
       </div>
@@ -73,14 +61,12 @@ export default class App extends React.Component {
 }
 
 class ListItem extends React.Component {
-  onItemClick () {
-    var index = this.props.index;
+  onItemClick (index) {
     this.props.itemClickHandler(index);
   }
   render () {
-    const klass = `list-item ${this.props.klass}`;
     return (
-      <li className={klass} onClick={this.onItemClick.bind(this)}>{this.props.text}</li>
+      <li className={this.props.className} onClick={this.onItemClick.bind(this, this.props.index)}>{this.props.text}</li>
     );
   }
 }
@@ -96,7 +82,7 @@ class AddItem extends React.Component {
   }
   render () {
     return (
-      <input type="button" name="addItem" value="Add" onClick={this.onButtonClick.bind(this)}/>
+      <input type="button" name="addItem" value="Add" onClick={() => this.onButtonClick()}/>
     );
   }
 }
@@ -106,56 +92,57 @@ AddItem.propTypes = {
 
 class OpenAll extends React.Component {
   onButtonClick () {
-    this.props.openAllHandler();
+    this.props.changeAllHandler(item => ({isOpen: true}));
   }
   render () {
     return (
-      <input type="button" name="openAll" value="Open All" onClick={this.onButtonClick.bind(this)}/>
+      <input type="button" name="openAll" value="Open All" onClick={() => this.onButtonClick()}/>
     );
   }
 }
 OpenAll.propTypes = {
-  openAllHandler: React.PropTypes.func.isRequired
+  changeAllHandler: React.PropTypes.func.isRequired
 }
 
 class CloseAll extends React.Component {
   onButtonClick () {
-    this.props.closeAllHandler();
+    this.props.changeAllHandler(item => ({isOpen: false}));
   }
   render () {
     return (
-      <input type="button" name="closeAll" value="Close All" onClick={this.onButtonClick.bind(this)}/>
+      <input type="button" name="closeAll" value="Close All" onClick={() => this.onButtonClick()}/>
     );
   }
 }
 CloseAll.propTypes = {
-  closeAllHandler: React.PropTypes.func.isRequired
+  changeAllHandler: React.PropTypes.func.isRequired
 }
 
 class ToggleAll extends React.Component {
   onButtonClick () {
-    this.props.toggleAllHandler();
+    this.props.changeAllHandler(item => ({isOpen: !item.isOpen}));
   }
   render () {
     return (
-      <input type="button" name="toggleAll" value="ToggleAll" onClick={this.onButtonClick.bind(this)}/>
+      <input type="button" name="toggleAll" value="ToggleAll" onClick={() => this.onButtonClick()}/>
     );
   }
 }
 ToggleAll.propTypes = {
-  toggleAllHandler: React.PropTypes.func.isRequired
+  changeAllHandler: React.PropTypes.func.isRequired
 }
 
 class SearchBox extends React.Component {
   keyUpHandler (event) {
-    this.props.searchHandler(event.target.value);
+    const searchRegex = new RegExp(event.target.value, 'i');
+    this.props.changeAllHandler(item => ({isVisible: searchRegex.test(item.text)}));
   }
   render () {
     return (
-      <input type="text" id="search" onKeyUp={this.keyUpHandler.bind(this)} placeholder="Search"/>
+      <input type="text" id="search" onKeyUp={event => this.keyUpHandler(event)} placeholder="Search"/>
     );
   }
 }
 SearchBox.propTypes = {
-  searchHandler: React.PropTypes.func.isRequired
+  changeAllHandler: React.PropTypes.func.isRequired
 }
