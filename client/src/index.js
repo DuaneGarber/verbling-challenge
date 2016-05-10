@@ -6,7 +6,7 @@ import App from './views/App';
 import Store from './data/Store';
 
 const render = () => {
-  ReactDOM.render(<App/>, document.getElementById('app'));
+  ReactDOM.render(<App items={Store.getState()}/>, document.getElementById('app'));
 }
 
 Store.subscribe(render);

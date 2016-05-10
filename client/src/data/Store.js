@@ -14,13 +14,17 @@ const itemsApp = (state = [], action = {}) => {
           isOpen: false,
           isVisible: true
         }
-      ]
+      ];
+      
     case Actions.TOGGLE_ALL:
       return  state.map(item => Object.assign({}, item, {isOpen: !item.isOpen}));
+
     case Actions.OPEN_ALL:
       return  state.map(item => Object.assign({}, item, {isOpen: true}));
+
     case Actions.CLOSE_ALL:
       return  state.map(item => Object.assign({}, item, {isOpen: false}));
+
     case Actions.TOGGLE_ITEM:
       const target = state[action.id];
       const targetItem = Object.assign({}, target, {isOpen: !target.isOpen})
@@ -28,6 +32,7 @@ const itemsApp = (state = [], action = {}) => {
                targetItem,
                ...state.slice(action.id + 1)
              ];
+
     case Actions.ITEM_FILTER:
       const searchRegex = new RegExp(action.search, 'i');
       return  state.map(item => Object.assign({}, item, {isVisible: searchRegex.test(item.text)}));
