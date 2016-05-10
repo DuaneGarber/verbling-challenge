@@ -1,3 +1,6 @@
+# Node Version
+This Project Requires Node 6.x
+
 # Verbling React Challenge
 
 ![](docs/spec.png)
