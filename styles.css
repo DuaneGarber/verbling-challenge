@@ -3,24 +3,36 @@ body {
   height: 100vh;
 }
 
+h1 {
+  text-align: center;
+}
+
 #app {
-  width: 400px;
-  margin: auto;
+  width: 100%;
 }
 
 #search {
-  width: 200px;
+  width: 400px;
+  line-height: 35px;
+  margin-bottom: 5px;
 }
-
+#itemContainer {
+  width: 400px;
+  margin: auto;
+}
 #listContainer {
-  height: 200px;
-  width: 200px;
-
+  height: 400px;
   list-style-type: none;
-  margin: 0px;
+  margin: 5px 0px;
   overflow-y: scroll;
   padding-left: 0px;
+  border: 1px solid #666;
 }
+
+#buttonContainer {
+  width: 100%;
+  text-align: center;
+}    
 
 .list-item {
   line-height: 45px;
@@ -29,8 +41,35 @@ body {
   margin: 5px 0;
   box-shadow: 5px 5px 5px #666;
   border: 1px solid #666;
+  font-size: .85rem;
+  padding: 0 3px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+}
+
+.list-item.open {
+  max-height: none;
+  white-space: normal;
 }
 
 .hidden {
   display: none;
 }
+
+input[type="button"] {
+  width: 90px;
+  background: #129dfa;
+  color: #fff;
+  border-radius: 8px;
+  padding: 5px;
+  margin: 0 3px;
+  border: none;
+  font-size: 1em;
+}
+
+input[name="addItem"] {
+  margin-left: 25px;
+}
+// Primary: #129dfa
+// Secondary: #fdcc44
