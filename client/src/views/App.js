@@ -28,7 +28,7 @@ export default class App extends React.Component {
         <div id="itemContainer">
           <SearchBox />
           <ul id="listContainer">
-            {this.props.items.map(this.renderItems.bind(this))}
+            {this.props.items.map(this.renderItems)}
           </ul>
         </div>
         <div id="buttonContainer">
