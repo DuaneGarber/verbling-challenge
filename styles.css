@@ -12,9 +12,10 @@ h1 {
 }
 
 #search {
-  width: 400px;
+  width: 390px;
   line-height: 35px;
   margin-bottom: 5px;
+  padding: 0 5px;
 }
 #itemContainer {
   width: 400px;

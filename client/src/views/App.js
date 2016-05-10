@@ -2,28 +2,16 @@
 
 import React from 'react';
 import classNames from 'classnames';
+import Store from './../data/Store';
+import Actions from './../actions/Actions';
+
+let itemId = 0;
 
 export default class App extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      items: [
-      //   {
-      //     text: "the quick brown dog jumped over the lazy fox",
-      //     isOpen: false,
-      //     isVisible: true
-      //   },
-      //   {
-      //     text: "this is another long sentance that has no point",
-      //     isOpen: false,
-      //     isVisible: true
-      //   },
-      //   {
-      //     text: "short",
-      //     isOpen: false,
-      //     isVisible: true
-      //   },
-      ]
+      items: []
     };
 
     this.changeAllHandler = this.changeAllHandler.bind(this);
@@ -33,7 +21,7 @@ export default class App extends React.Component {
     const isVisible = item.isVisible ? '' : 'hidden';
     const className = classNames('list-item', {'open' : item.isOpen, 'hidden': !item.isVisible});
     return (
-      <ListItem key={index} index={index} text={item.text} className={className} itemClickHandler={this.itemClickHandler.bind(this)}/>
+      <ListItem key={index} index={index} text={item.text} className={className} itemClickHandler={this.itemClickHandler.bind(this, index)}/>
     );
   }
   addItemHandler (text) {
@@ -50,13 +38,10 @@ export default class App extends React.Component {
     this.setState({items: items});
   }
   itemClickHandler (index) {
-    const target = this.state.items[index];
-    const targetItem = Object.assign({}, target, {isOpen: !target.isOpen})
-    const items = [...this.state.items.slice(0, index),
-                   targetItem,
-                   ...this.state.items.slice(index+1)
-                  ];
-    this.setState({items: items});
+    Store.dispatch({
+      type: Actions.TOGGLE_ITEM,
+      id: index
+    });
   }
   render () {
     return (
@@ -64,7 +49,7 @@ export default class App extends React.Component {
         <div id="itemContainer">
           <SearchBox changeAllHandler={this.changeAllHandler}/>
           <ul id="listContainer">
-            {this.state.items.map(this.renderItems.bind(this))}
+            {Store.getState().map(this.renderItems.bind(this))}
           </ul>
         </div>
         <div id="buttonContainer">
@@ -96,7 +81,11 @@ ListItem.propTypes = {
 class AddItem extends React.Component {
   onButtonClick () {
     const text = window.prompt("Please enter the new list item");
-    this.props.addItemHandler(text);
+    Store.dispatch({
+      type: Actions.ADD_ITEM,
+      id: itemId++,
+      text: text
+    });
   }
   render () {
     return (
@@ -110,7 +99,9 @@ AddItem.propTypes = {
 
 class OpenAll extends React.Component {
   onButtonClick () {
-    this.props.changeAllHandler(item => ({isOpen: true}));
+    Store.dispatch({
+      type: Actions.OPEN_ALL
+    });
   }
   render () {
     return (
@@ -124,7 +115,9 @@ OpenAll.propTypes = {
 
 class CloseAll extends React.Component {
   onButtonClick () {
-    this.props.changeAllHandler(item => ({isOpen: false}));
+    Store.dispatch({
+      type: Actions.CLOSE_ALL
+    });
   }
   render () {
     return (
@@ -138,7 +131,9 @@ CloseAll.propTypes = {
 
 class ToggleAll extends React.Component {
   onButtonClick () {
-    this.props.changeAllHandler(item => ({isOpen: !item.isOpen}));
+    Store.dispatch({
+      type: Actions.TOGGLE_ALL
+    });
   }
   render () {
     return (
@@ -152,8 +147,10 @@ ToggleAll.propTypes = {
 
 class SearchBox extends React.Component {
   keyUpHandler (event) {
-    const searchRegex = new RegExp(event.target.value, 'i');
-    this.props.changeAllHandler(item => ({isVisible: searchRegex.test(item.text)}));
+    Store.dispatch({
+      type: Actions.ITEM_FILTER,
+      search: event.target.value
+    });
   }
   render () {
     return (
