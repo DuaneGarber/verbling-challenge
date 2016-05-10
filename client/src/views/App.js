@@ -7,7 +7,23 @@ export default class App extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      items: []
+      items: [
+      //   {
+      //     text: "the quick brown dog jumped over the lazy fox",
+      //     isOpen: false,
+      //     isVisible: true
+      //   },
+      //   {
+      //     text: "this is another long sentance that has no point",
+      //     isOpen: false,
+      //     isVisible: true
+      //   },
+      //   {
+      //     text: "short",
+      //     isOpen: false,
+      //     isVisible: true
+      //   },
+      ]
     };
 
     this.changeAllHandler = this.changeAllHandler.bind(this);
@@ -44,18 +60,20 @@ export default class App extends React.Component {
   }
   render () {
     return (
-      <div>
-        <SearchBox changeAllHandler={this.changeAllHandler}/>
-        <ul id="listContainer">
-          {this.state.items.map(this.renderItems.bind(this))}
-        </ul>
+      <section>
+        <div id="itemContainer">
+          <SearchBox changeAllHandler={this.changeAllHandler}/>
+          <ul id="listContainer">
+            {this.state.items.map(this.renderItems.bind(this))}
+          </ul>
+        </div>
         <div id="buttonContainer">
           <OpenAll changeAllHandler={this.changeAllHandler}/>
           <CloseAll changeAllHandler={this.changeAllHandler}/>
           <ToggleAll changeAllHandler={this.changeAllHandler}/>
           <AddItem addItemHandler={this.addItemHandler.bind(this)}/>
         </div>
-      </div>
+      </section>
     );
   }
 }
