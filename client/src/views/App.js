@@ -5,39 +5,48 @@ import classNames from 'classnames';
 import Store from './../data/Store';
 import Actions from './../actions/Actions';
 
+// Used to maintain unique IDs for items
 let itemId = 0;
 
 export default class App extends React.Component {
   constructor (props) {
     super(props);
-    this.state = {
-      items: []
-    };
-
-    this.changeAllHandler = this.changeAllHandler.bind(this);
+    this.state = {};
   }
+  // Render all the the List items
   renderItems (item, index) {
     const isOpen = item.isOpen ? 'open' : 'closed';
     const isVisible = item.isVisible ? '' : 'hidden';
     const className = classNames('list-item', {'open' : item.isOpen, 'hidden': !item.isVisible});
     return (
-      <ListItem key={index} index={index} text={item.text} className={className} itemClickHandler={this.itemClickHandler.bind(this, index)}/>
+      <ListItem key={index} index={index} text={item.text} className={className}/>
     );
   }
-  addItemHandler (text) {
-    const item = {
-      text: text,
-      isOpen: false,
-      isVisible: true
-    }
-    const items = [...this.state.items, item];
-    this.setState({items: items});
+  render () {
+    return (
+      <section>
+        <div id="itemContainer">
+          <SearchBox />
+          <ul id="listContainer">
+            {this.props.items.map(this.renderItems.bind(this))}
+          </ul>
+        </div>
+        <div id="buttonContainer">
+          <OpenAll />
+          <CloseAll />
+          <ToggleAll />
+          <AddItem />
+        </div>
+      </section>
+    );
   }
-  changeAllHandler (callback) {
-    const items = this.state.items.map((item) => Object.assign({}, item, callback(item)));
-    this.setState({items: items});
-  }
-  itemClickHandler (index) {
+}
+
+/**
+ * Simple List Item display
+ */
+class ListItem extends React.Component {
+  onItemClick (index) {
     Store.dispatch({
       type: Actions.TOGGLE_ITEM,
       id: index
@@ -45,39 +54,17 @@ export default class App extends React.Component {
   }
   render () {
     return (
-      <section>
-        <div id="itemContainer">
-          <SearchBox changeAllHandler={this.changeAllHandler}/>
-          <ul id="listContainer">
-            {Store.getState().map(this.renderItems.bind(this))}
-          </ul>
-        </div>
-        <div id="buttonContainer">
-          <OpenAll changeAllHandler={this.changeAllHandler}/>
-          <CloseAll changeAllHandler={this.changeAllHandler}/>
-          <ToggleAll changeAllHandler={this.changeAllHandler}/>
-          <AddItem addItemHandler={this.addItemHandler.bind(this)}/>
-        </div>
-      </section>
-    );
-  }
-}
-
-class ListItem extends React.Component {
-  onItemClick (index) {
-    this.props.itemClickHandler(index);
-  }
-  render () {
-    return (
-      <li className={this.props.className} onClick={this.onItemClick.bind(this, this.props.index)}>{this.props.text}</li>
+      <li className={this.props.className} onClick={() => this.onItemClick(this.props.index)}>{this.props.text}</li>
     );
   }
 }
 ListItem.propTypes = {
-  text: React.PropTypes.string.isRequired,
-  itemClickHandler: React.PropTypes.func.isRequired
+  text: React.PropTypes.string.isRequired
 }
 
+/**
+ * Add Item Button
+ */
 class AddItem extends React.Component {
   onButtonClick () {
     const text = window.prompt("Please enter the new list item");
@@ -93,10 +80,10 @@ class AddItem extends React.Component {
     );
   }
 }
-AddItem.propTypes = {
-  addItemHandler: React.PropTypes.func.isRequired
-}
 
+/**
+ * Open All Button
+ */
 class OpenAll extends React.Component {
   onButtonClick () {
     Store.dispatch({
@@ -109,10 +96,10 @@ class OpenAll extends React.Component {
     );
   }
 }
-OpenAll.propTypes = {
-  changeAllHandler: React.PropTypes.func.isRequired
-}
 
+/**
+ * Close All Button
+ */
 class CloseAll extends React.Component {
   onButtonClick () {
     Store.dispatch({
@@ -125,10 +112,10 @@ class CloseAll extends React.Component {
     );
   }
 }
-CloseAll.propTypes = {
-  changeAllHandler: React.PropTypes.func.isRequired
-}
 
+/**
+ * Toggle All Button
+ */
 class ToggleAll extends React.Component {
   onButtonClick () {
     Store.dispatch({
@@ -141,10 +128,10 @@ class ToggleAll extends React.Component {
     );
   }
 }
-ToggleAll.propTypes = {
-  changeAllHandler: React.PropTypes.func.isRequired
-}
 
+/**
+ * Search Box controls
+ */
 class SearchBox extends React.Component {
   keyUpHandler (event) {
     Store.dispatch({
@@ -157,7 +144,4 @@ class SearchBox extends React.Component {
       <input type="text" id="search" onKeyUp={event => this.keyUpHandler(event)} placeholder="Search"/>
     );
   }
-}
-SearchBox.propTypes = {
-  changeAllHandler: React.PropTypes.func.isRequired
 }
